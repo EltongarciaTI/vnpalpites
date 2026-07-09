@@ -454,6 +454,8 @@
   /* ---------- admin screen ---------- */
   .admin-top{display:flex;align-items:center;justify-content:space-between;padding:.6rem 1.1rem .8rem;border-bottom:1px solid var(--line);}
   .admin-title{font-family:var(--font-display);text-transform:uppercase;font-size:1rem;letter-spacing:.02em;}
+  .admin-greeting{display:flex;flex-direction:column;}
+  .admin-date{font-size:.66rem;color:var(--text-muted);text-transform:capitalize;margin-top:.1rem;}
   .avatar{width:32px;height:32px;border-radius:50%;background:var(--surface-2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:.72rem;color:var(--ouro);}
   .admin-body{padding:1rem 1.1rem 1.4rem;}
 
@@ -464,8 +466,11 @@
   .btn-new:hover{filter:brightness(1.1);}
 
   .plist{display:flex;flex-direction:column;gap:.5rem;}
-  .prow{display:flex;align-items:center;gap:.6rem;background:var(--surface-2);border:1px solid var(--line);border-radius:.7rem;padding:.55rem .7rem;transition:transform .15s ease, border-color .15s ease;}
+  .prow{display:flex;align-items:center;gap:.6rem;background:var(--surface-2);border:1px solid var(--line);border-radius:.7rem;padding:.55rem .7rem;transition:transform .15s ease, border-color .15s ease, opacity .2s ease;}
   .prow:hover{transform:translateX(2px);border-color:color-mix(in srgb, var(--accent) 40%, var(--line));}
+  .prow.row-in{animation:rowIn .3s ease;}
+  @keyframes rowIn{from{opacity:0;transform:translateY(-8px);}to{opacity:1;transform:translateY(0);}}
+  @media (prefers-reduced-motion:reduce){.prow.row-in{animation:none;}}
   .prow-info{flex:1;min-width:0;}
   .prow-info p{margin:0;font-size:.82rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .prow-info span{font-size:.66rem;color:var(--text-muted);}
@@ -493,6 +498,19 @@
 
   .link-field{display:flex;align-items:center;gap:.4rem;background:var(--surface);border:1px solid var(--line);border-radius:.5rem;padding:.4rem .55rem;font-family:var(--font-mono);font-size:.7rem;color:var(--text-muted);overflow:hidden;}
   .link-field span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+
+  .toast{
+    position:absolute;left:50%;bottom:70px;
+    transform:translateX(-50%) translateY(8px);
+    background:var(--accent-bright);color:#08120d;
+    font-size:.74rem;font-weight:700;
+    padding:.6rem 1.1rem;border-radius:999px;white-space:nowrap;
+    box-shadow:0 14px 28px -14px rgba(0,0,0,.6);
+    opacity:0;pointer-events:none;z-index:6;
+    transition:opacity .25s ease, transform .25s ease;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  @media (prefers-reduced-motion:reduce){.toast{transition:opacity .01s linear;}}
 
   /* ---------- theme panel (outside the phones) ---------- */
   .theme-panel{
@@ -806,7 +824,10 @@
 
           <div class="sticky-head">
             <div class="statusbar"><span>20:47</span><span>●●● VN</span></div>
-            <div class="admin-top"><span class="admin-title">Painel</span><div class="avatar">V</div></div>
+            <div class="admin-top">
+              <div class="admin-greeting"><span class="admin-title">Olá, Vinny</span><span class="admin-date" id="adminDate"></span></div>
+              <div class="avatar">V</div>
+            </div>
           </div>
 
           <div class="admin-body">
@@ -823,45 +844,45 @@
 
             <div class="admin-section">
               <div class="admin-section-head"><h3>Palpites</h3><button class="btn-new" id="toggleForm">+ Novo</button></div>
-              <div class="plist">
+              <div class="plist" id="plist">
                 <div class="prow">
                   <div class="prow-info"><p>Flamengo x Palmeiras</p><span>Odd 1.85 · 19:30</span></div>
                   <div class="prow-chips"><span class="chip cat-bas">Básica</span><span class="chip aberto">Aberto</span></div>
-                  <div class="prow-actions"><button class="icon-btn" title="Editar" onclick="return false">✎</button><button class="icon-btn" title="Excluir" onclick="return false">✕</button></div>
+                  <div class="prow-actions"><button class="icon-btn" title="Editar" onclick="return false">✎</button><button class="icon-btn" title="Excluir" onclick="removeRow(this)">✕</button></div>
                 </div>
                 <div class="prow">
                   <div class="prow-info"><p>6 jogos · Múltipla</p><span>Odd 187.40 · hoje</span></div>
                   <div class="prow-chips"><span class="chip cat-bomba">Bomba</span><span class="chip aberto">Aberto</span></div>
-                  <div class="prow-actions"><button class="icon-btn" title="Editar" onclick="return false">✎</button><button class="icon-btn" title="Excluir" onclick="return false">✕</button></div>
+                  <div class="prow-actions"><button class="icon-btn" title="Editar" onclick="return false">✎</button><button class="icon-btn" title="Excluir" onclick="removeRow(this)">✕</button></div>
                 </div>
                 <div class="prow">
                   <div class="prow-info"><p>Corinthians x São Paulo</p><span>Odd 2.30 · ontem</span></div>
                   <div class="prow-chips"><span class="chip cat-bas">Básica</span><span class="chip green">Green</span></div>
-                  <div class="prow-actions"><button class="icon-btn" title="Editar" onclick="return false">✎</button><button class="icon-btn" title="Excluir" onclick="return false">✕</button></div>
+                  <div class="prow-actions"><button class="icon-btn" title="Editar" onclick="return false">✎</button><button class="icon-btn" title="Excluir" onclick="removeRow(this)">✕</button></div>
                 </div>
                 <div class="prow">
                   <div class="prow-info"><p>Grêmio x Internacional</p><span>Odd 1.75 · ontem</span></div>
                   <div class="prow-chips"><span class="chip cat-bas">Básica</span><span class="chip red">Red</span></div>
-                  <div class="prow-actions"><button class="icon-btn" title="Editar" onclick="return false">✎</button><button class="icon-btn" title="Excluir" onclick="return false">✕</button></div>
+                  <div class="prow-actions"><button class="icon-btn" title="Editar" onclick="return false">✎</button><button class="icon-btn" title="Excluir" onclick="removeRow(this)">✕</button></div>
                 </div>
               </div>
 
               <div class="newform" id="newForm">
-                <div><label>Categoria</label><select><option>Odd Básica</option><option>Bomba (odd alta)</option></select></div>
+                <div><label>Categoria</label><select id="npCategoria"><option>Odd Básica</option><option>Bomba (odd alta)</option></select></div>
                 <div class="form-grid">
-                  <div><label>Campeonato</label><input type="text" placeholder="Ex: Brasileirão"></div>
-                  <div><label>Horário</label><input type="text" placeholder="Ex: 19:30"></div>
+                  <div><label>Campeonato</label><input type="text" id="npCampeonato" placeholder="Ex: Brasileirão"></div>
+                  <div><label>Horário</label><input type="text" id="npHorario" placeholder="Ex: 19:30"></div>
                 </div>
-                <div><label>Times</label><input type="text" placeholder="Ex: Flamengo x Palmeiras"></div>
-                <div><label>Mercado</label><input type="text" placeholder="Ex: Ambas marcam - Sim"></div>
+                <div><label>Times</label><input type="text" id="npTimes" placeholder="Ex: Flamengo x Palmeiras"></div>
+                <div><label>Mercado</label><input type="text" id="npMercado" placeholder="Ex: Ambas marcam - Sim"></div>
                 <div class="form-grid">
-                  <div><label>Odd</label><input type="text" placeholder="Ex: 1.85"></div>
-                  <div><label>Confiança</label><select><option>Alta</option><option>Média</option><option>Baixa</option></select></div>
+                  <div><label>Odd</label><input type="text" id="npOdd" placeholder="Ex: 1.85"></div>
+                  <div><label>Confiança</label><select id="npConfianca"><option>Alta</option><option>Média</option><option>Baixa</option></select></div>
                 </div>
-                <div><label>Link do bilhete pronto</label><input type="text" placeholder="https://parceiro.com/bilhete/..."></div>
+                <div><label>Link do bilhete pronto</label><input type="text" id="npLink" placeholder="https://parceiro.com/bilhete/..."></div>
                 <div class="form-actions">
                   <button class="btn-ghost" onclick="document.getElementById('newForm').classList.remove('open')">Cancelar</button>
-                  <button class="btn-solid" onclick="return false">Publicar</button>
+                  <button class="btn-solid" onclick="publishPalpite()">Publicar</button>
                 </div>
               </div>
             </div>
@@ -886,6 +907,11 @@
                 <button class="switch on" onclick="this.classList.toggle('on')"></button>
               </div>
 
+              <div class="setting-row">
+                <div><p>Pausar publicações</p><span>Esconde os palpites novos do site sem apagar nada</span></div>
+                <button class="switch" onclick="this.classList.toggle('on')"></button>
+              </div>
+
               <div class="setting-row col">
                 <p style="margin-bottom:.4rem;">Link de afiliado padrão</p>
                 <div class="link-field"><span>https://parceiro.com/ref/vinnyoliverr</span></div>
@@ -900,6 +926,7 @@
 
           </div>
         </div>
+        <div class="toast" id="toast"></div>
       </div>
     </section>
 
@@ -1034,6 +1061,59 @@
   document.getElementById('toggleForm').addEventListener('click', function(){
     document.getElementById('newForm').classList.toggle('open');
   });
+
+  var adminDateEl = document.getElementById('adminDate');
+  if(adminDateEl){
+    var hoje = new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' });
+    adminDateEl.textContent = hoje;
+  }
+
+  var toastTimer;
+  function showToast(msg){
+    var t = document.getElementById('toast');
+    if(!t) return;
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ t.classList.remove('show'); }, 2200);
+  }
+
+  function removeRow(btn){
+    var row = btn.closest('.prow');
+    if(!row) return;
+    row.style.transition = 'opacity .2s ease, transform .2s ease';
+    row.style.opacity = '0';
+    row.style.transform = 'translateX(10px)';
+    setTimeout(function(){ row.remove(); }, 200);
+    showToast('Palpite removido.');
+  }
+
+  function publishPalpite(){
+    var times = document.getElementById('npTimes').value.trim();
+    var odd = document.getElementById('npOdd').value.trim();
+    var horario = document.getElementById('npHorario').value.trim();
+    var categoria = document.getElementById('npCategoria').value;
+
+    if(!times || !odd){
+      showToast('Preenche pelo menos Times e Odd.');
+      return;
+    }
+
+    var isBomba = categoria.indexOf('Bomba') > -1;
+    var row = document.createElement('div');
+    row.className = 'prow row-in';
+    row.innerHTML =
+      '<div class="prow-info"><p>' + times + '</p><span>Odd ' + odd + (horario ? ' · ' + horario : '') + '</span></div>' +
+      '<div class="prow-chips"><span class="chip ' + (isBomba ? 'cat-bomba' : 'cat-bas') + '">' + (isBomba ? 'Bomba' : 'Básica') + '</span><span class="chip aberto">Aberto</span></div>' +
+      '<div class="prow-actions"><button class="icon-btn" title="Editar" onclick="return false">✎</button><button class="icon-btn" title="Excluir" onclick="removeRow(this)">✕</button></div>';
+
+    document.getElementById('plist').prepend(row);
+    document.getElementById('newForm').classList.remove('open');
+    ['npCampeonato','npHorario','npTimes','npMercado','npOdd','npLink'].forEach(function(id){
+      document.getElementById(id).value = '';
+    });
+    showToast('Palpite publicado! Já aparece pros seguidores.');
+  }
 
   var stage = document.getElementById('stage');
 
