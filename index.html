@@ -4,6 +4,22 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>VN Palpites — Protótipo</title>
+<meta name="description" content="Os palpites do @vinny_oliverr, separados por categoria, com resultado do mês em green ou vermelho. Clica e cai direto no bilhete pronto.">
+<meta name="theme-color" content="#0a0f0d">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="VN Palpites — @vinny_oliverr">
+<meta property="og:description" content="Os palpites do Vinny, separados por categoria, com resultado do mês em green ou vermelho. Clica e cai direto no bilhete pronto.">
+<meta property="og:url" content="https://eltongarciati.github.io/vnpalpites/">
+<meta property="og:locale" content="pt_BR">
+
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="VN Palpites — @vinny_oliverr">
+<meta name="twitter:description" content="Os palpites do Vinny, direto no bilhete pronto.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Inter:wght@400;500;600;700&family=Lora:wght@400;600&family=Montserrat:wght@600;700;800&family=Nunito+Sans:wght@400;600;700&family=Orbitron:wght@700;900&family=Oswald:wght@600;700&family=Playfair+Display:wght@700;900&family=Poppins:wght@600;700;800&family=Rajdhani:wght@400;500;600&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
   :root{
     --ink:#0a0f0d;
@@ -26,15 +42,42 @@
   ::selection{background:var(--accent);color:#08120d;}
 
   .stage{
-    background:
-      radial-gradient(60% 50% at 18% 0%, color-mix(in srgb, var(--accent) 20%, transparent), transparent 70%),
-      radial-gradient(50% 40% at 85% 15%, color-mix(in srgb, var(--ouro) 12%, transparent), transparent 70%),
-      var(--ink);
+    position:relative;
+    isolation:isolate;
+    overflow:hidden;
+    background:var(--ink);
     color:var(--text);
     font-family:var(--font-body);
     min-height:100vh;
     padding:clamp(1.5rem,4vw,3.5rem) clamp(1rem,4vw,2rem) 3rem;
   }
+  .stage::before, .stage::after{
+    content:"";
+    position:absolute;
+    z-index:-1;
+    width:52vw;height:52vw;
+    max-width:640px;max-height:640px;
+    min-width:320px;min-height:320px;
+    border-radius:50%;
+    filter:blur(70px);
+    pointer-events:none;
+  }
+  .stage::before{background:var(--accent);opacity:.16;top:-14%;left:-12%;}
+  .stage::after{background:var(--ouro);opacity:.1;top:-8%;right:-16%;}
+  .intro,.feature-grid,.showcase,.credit{position:relative;}
+
+  @keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+  .reveal{opacity:0;animation:fadeUp .7s cubic-bezier(.16,.8,.3,1) forwards;}
+  .reveal.d1{animation-delay:.05s;}
+  .reveal.d2{animation-delay:.18s;}
+  .reveal.d3{animation-delay:.3s;}
+  .reveal.d4{animation-delay:.42s;}
+  @media (prefers-reduced-motion:reduce){.reveal{animation:none;opacity:1;}}
+
+  .trust-bar{display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;margin:1.3rem 0 0;}
+  .trust-item{display:flex;align-items:baseline;gap:.35rem;}
+  .trust-item b{font-family:var(--font-mono);font-size:1.15rem;font-weight:700;color:var(--accent-bright);font-variant-numeric:tabular-nums;}
+  .trust-item span{font-size:.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.03em;}
 
   /* ---------- intro ---------- */
   .intro{max-width:46rem;margin:0 auto 2rem;}
@@ -55,7 +98,7 @@
     margin:0 0 .8rem;
     text-wrap:balance;
   }
-  .intro h1 span{color:var(--accent-bright);}
+  .intro h1 span{color:var(--accent-bright);text-shadow:0 0 28px color-mix(in srgb, var(--accent-bright) 45%, transparent);}
   .intro p{
     font-size:1rem;
     line-height:1.6;
@@ -144,6 +187,7 @@
     border-radius:1.7rem;
     overflow-y:auto;
     overflow-x:hidden;
+    overscroll-behavior:contain;
     height:min(660px,74vh);
     scrollbar-width:thin;
     scrollbar-color:var(--line) transparent;
@@ -261,7 +305,13 @@
     background:color-mix(in srgb, var(--accent) 12%, var(--surface-2));
     border:1px solid color-mix(in srgb, var(--accent) 35%, transparent);
     border-radius:1rem;padding:.8rem .9rem;margin-bottom:1.1rem;
+    animation:glowPulse 2.6s ease-in-out infinite;
   }
+  @keyframes glowPulse{
+    0%,100%{box-shadow:0 0 0 0 color-mix(in srgb, var(--accent) 25%, transparent);}
+    50%{box-shadow:0 0 0 6px color-mix(in srgb, var(--accent) 0%, transparent);}
+  }
+  @media (prefers-reduced-motion:reduce){.hero-highlight{animation:none;}}
   .hero-highlight-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:.4rem;}
   .hero-highlight-top b{font-family:var(--font-display);font-size:.66rem;text-transform:uppercase;color:var(--accent-bright);letter-spacing:.03em;}
   .hero-highlight p{margin:0;font-size:.85rem;font-weight:600;}
@@ -354,6 +404,18 @@
   .stat b{display:block;font-family:var(--font-mono);font-size:1.1rem;font-weight:700;font-variant-numeric:tabular-nums;color:var(--text);}
   .stat.pos b{color:var(--accent-bright);}
   .stat span{font-size:.58rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.02em;}
+  .stat.ring-stat{display:flex;flex-direction:column;align-items:center;justify-content:center;}
+  .ring{
+    width:42px;height:42px;border-radius:50%;
+    background:conic-gradient(var(--accent-bright) calc(var(--pct,0) * 3.6deg), var(--line) 0deg);
+    display:flex;align-items:center;justify-content:center;
+    margin-bottom:.25rem;
+  }
+  .ring i{
+    width:30px;height:30px;border-radius:50%;background:var(--surface-2);
+    display:flex;align-items:center;justify-content:center;
+    font-style:normal;font-family:var(--font-mono);font-size:.62rem;font-weight:700;color:var(--text);
+  }
 
   .track{background:var(--surface-2);border:1px solid var(--line);border-radius:1rem;padding:.8rem .9rem;margin-bottom:.6rem;}
   .track-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:.55rem;}
@@ -398,10 +460,12 @@
   .admin-section{margin-bottom:1.3rem;}
   .admin-section-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:.55rem;}
   .admin-section-head h3{font-family:var(--font-display);font-size:.78rem;text-transform:uppercase;margin:0;letter-spacing:.03em;}
-  .btn-new{font-family:var(--font-display);font-size:.66rem;text-transform:uppercase;background:var(--accent);color:#08120d;border:none;border-radius:999px;padding:.4rem .7rem;cursor:pointer;letter-spacing:.03em;}
+  .btn-new{font-family:var(--font-display);font-size:.66rem;text-transform:uppercase;background:var(--accent);color:#08120d;border:none;border-radius:999px;padding:.4rem .7rem;cursor:pointer;letter-spacing:.03em;transition:filter .15s ease;}
+  .btn-new:hover{filter:brightness(1.1);}
 
   .plist{display:flex;flex-direction:column;gap:.5rem;}
-  .prow{display:flex;align-items:center;gap:.6rem;background:var(--surface-2);border:1px solid var(--line);border-radius:.7rem;padding:.55rem .7rem;}
+  .prow{display:flex;align-items:center;gap:.6rem;background:var(--surface-2);border:1px solid var(--line);border-radius:.7rem;padding:.55rem .7rem;transition:transform .15s ease, border-color .15s ease;}
+  .prow:hover{transform:translateX(2px);border-color:color-mix(in srgb, var(--accent) 40%, var(--line));}
   .prow-info{flex:1;min-width:0;}
   .prow-info p{margin:0;font-size:.82rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .prow-info span{font-size:.66rem;color:var(--text-muted);}
@@ -427,12 +491,70 @@
 
   .setting-row.col{flex-direction:column;align-items:stretch;}
 
-  .swatches{display:flex;gap:.5rem;padding:.2rem 0 .1rem;}
-  .swatch{width:28px;height:28px;border-radius:50%;border:2px solid transparent;cursor:pointer;}
-  .swatch.active{border-color:var(--text);}
-
   .link-field{display:flex;align-items:center;gap:.4rem;background:var(--surface);border:1px solid var(--line);border-radius:.5rem;padding:.4rem .55rem;font-family:var(--font-mono);font-size:.7rem;color:var(--text-muted);overflow:hidden;}
   .link-field span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+
+  /* ---------- theme panel (outside the phones) ---------- */
+  .theme-panel{
+    width:100%;max-width:340px;
+    background:linear-gradient(180deg, var(--surface), var(--surface-2));
+    border:1px solid var(--line);
+    border-radius:1.4rem;
+    padding:1.3rem 1.2rem;
+    box-shadow:0 30px 60px -30px rgba(0,0,0,.6);
+  }
+  .theme-lead{font-size:.85rem;color:var(--text-muted);line-height:1.55;margin:0 0 1.1rem;}
+  .theme-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.9rem 0;}
+  .theme-swatch{display:flex;flex-direction:column;align-items:center;gap:.4rem;background:none;border:none;cursor:pointer;font-family:var(--font-body);}
+  .theme-swatch i{
+    display:block;width:40px;height:40px;border-radius:50%;
+    border:2px solid transparent;box-shadow:0 0 0 1px var(--line) inset;
+    transition:transform .15s ease, border-color .15s ease;
+  }
+  .theme-swatch:hover i{transform:scale(1.08);}
+  .theme-swatch.active i{border-color:var(--text);box-shadow:0 0 0 3px var(--surface-2), 0 0 0 4px var(--text);}
+  .theme-swatch span{font-size:.6rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.02em;}
+  .theme-current{
+    margin:1.2rem 0 0;padding-top:1rem;border-top:1px solid var(--line);
+    font-size:.78rem;color:var(--text-muted);text-align:center;
+  }
+  .theme-current b{color:var(--accent-bright);font-family:var(--font-display);text-transform:uppercase;letter-spacing:.02em;}
+
+  /* ---------- modelos prontos ---------- */
+  .models-section{max-width:64rem;margin:3rem auto 0;}
+  .section-eyebrow{font-family:var(--font-display);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-bright);margin:0 0 .6rem;}
+  .section-title{font-family:var(--font-display);text-transform:uppercase;font-size:clamp(1.3rem,3vw,1.7rem);letter-spacing:-.01em;margin:0 0 .5rem;text-wrap:balance;}
+  .section-lead{font-size:.9rem;color:var(--text-muted);line-height:1.55;margin:0 0 1.5rem;max-width:38rem;}
+
+  .model-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;}
+  .model-card{
+    text-align:left;cursor:pointer;font-family:var(--font-body);
+    background:var(--surface);border:1px solid var(--line);border-radius:1.1rem;
+    padding:1.1rem 1.1rem 1.2rem;
+    display:flex;flex-direction:column;gap:.7rem;
+    transition:transform .15s ease, border-color .15s ease, box-shadow .15s ease;
+  }
+  .model-card:hover{transform:translateY(-3px);box-shadow:0 16px 32px -20px rgba(0,0,0,.5);}
+  .model-card.active{border-color:var(--accent-bright);box-shadow:0 0 0 1px var(--accent-bright);}
+  .model-dots{display:flex;gap:.35rem;}
+  .model-dots i{width:16px;height:16px;border-radius:50%;display:block;}
+  .model-sample{font-size:1.2rem;line-height:1.1;letter-spacing:-.01em;}
+  .model-card b{font-family:var(--font-body);font-size:.85rem;color:var(--text);}
+  .model-card p{margin:0;font-size:.76rem;color:var(--text-muted);line-height:1.5;}
+
+  .theme-divider{height:1px;background:var(--line);margin:1.3rem 0;}
+  .theme-sub-label{font-family:var(--font-display);font-size:.72rem;text-transform:uppercase;letter-spacing:.03em;color:var(--text-muted);margin:0 0 .8rem;}
+  .font-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem;}
+  .font-swatch{
+    display:flex;flex-direction:column;align-items:center;gap:.35rem;
+    background:var(--surface-2);border:1px solid var(--line);border-radius:.8rem;
+    padding:.7rem .4rem;cursor:pointer;
+    transition:border-color .15s ease, transform .15s ease, background .15s ease;
+  }
+  .font-swatch:hover{transform:translateY(-2px);}
+  .font-swatch.active{border-color:var(--accent);background:color-mix(in srgb, var(--accent) 12%, var(--surface-2));}
+  .font-preview{font-size:1.4rem;line-height:1;color:var(--text);}
+  .font-swatch b{font-size:.62rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.02em;font-weight:600;}
 
   .credit{max-width:64rem;margin:2.5rem auto 0;text-align:center;font-size:.75rem;color:var(--text-muted);}
   .credit a{color:var(--accent-bright);text-decoration:none;font-weight:600;}
@@ -443,14 +565,20 @@
 
 <div class="stage" id="stage">
 
-  <div class="intro">
+  <div class="intro reveal d1">
     <p class="eyebrow">Protótipo · Demonstração</p>
     <h1>VN <span>Palpites</span></h1>
     <p>Exemplo de como pode ficar o site do @vinny_oliverr. O seguidor vê o palpite e toca em um botão que já leva direto ao bilhete pronto na casa parceira. Ao lado, o painel onde ele publica e controla tudo.</p>
     <p class="fineprint">Protótipo estático, com dados fictícios — sem conexão real com Instagram ou casas de apostas.</p>
+
+    <div class="trust-bar">
+      <div class="trust-item"><b class="count" data-target="78" data-suffix="%">0%</b><span>Acerto</span></div>
+      <div class="trust-item"><b class="count" data-target="128" data-suffix="k">0k</b><span>Seguidores</span></div>
+      <div class="trust-item"><b class="count" data-target="38.4" data-prefix="+" data-decimals="1">+0.0</b><span>Un. no mês</span></div>
+    </div>
   </div>
 
-  <div class="feature-grid">
+  <div class="feature-grid reveal d2">
     <div class="feature-card"><b>Início</b><span>Tela de entrada pública, sem login — pensada pra quem chega direto do Instagram e precisa entender o site em 3 segundos.</span></div>
     <div class="feature-card"><b>Palpites</b><span>Separados por categoria: Odd Básica (em torno de 2.00) e Bomba (múltiplas de odd alta, tipo 200).</span></div>
     <div class="feature-card"><b>Resultados</b><span>Mostra se o mês está no green ou no vermelho, o lucro em unidades e o histórico de acertos.</span></div>
@@ -460,7 +588,7 @@
   <div class="showcase">
 
     <!-- ============ PUBLIC SITE ============ -->
-    <section class="phone-block" aria-label="Site para os seguidores">
+    <section class="phone-block reveal d3" aria-label="Site para os seguidores">
       <p class="phone-label">O que o seguidor vê</p>
       <div class="phone">
         <div class="phone-notch"></div>
@@ -493,9 +621,9 @@
                 <p class="hero-sub">Segue os palpites do Vinny, toca no botão e cai direto no bilhete pronto. Sem planilha, sem enrolação.</p>
 
                 <div class="hero-stats">
-                  <div class="hero-stat"><b>78%</b><span>Acerto</span></div>
-                  <div class="hero-stat"><b>128k</b><span>Seguidores</span></div>
-                  <div class="hero-stat pos"><b>+38.4</b><span>Un. no mês</span></div>
+                  <div class="hero-stat"><b class="count" data-target="78" data-suffix="%">0%</b><span>Acerto</span></div>
+                  <div class="hero-stat"><b class="count" data-target="128" data-suffix="k">0k</b><span>Seguidores</span></div>
+                  <div class="hero-stat pos"><b class="count" data-target="38.4" data-prefix="+" data-decimals="1">+0.0</b><span>Un. no mês</span></div>
                 </div>
 
                 <div class="hero-highlight">
@@ -662,7 +790,7 @@
     </section>
 
     <!-- ============ ADMIN PANEL ============ -->
-    <section class="phone-block" aria-label="Painel administrativo">
+    <section class="phone-block reveal d4" aria-label="Painel administrativo">
       <p class="phone-label">O que o Vinny vê <b>(painel admin)</b></p>
       <div class="phone">
         <div class="phone-notch"></div>
@@ -676,10 +804,13 @@
           <div class="admin-body">
 
             <div class="stat-row" style="grid-template-columns:repeat(2,1fr);">
-              <div class="stat"><b>342</b><span>Cliques hoje</span></div>
-              <div class="stat"><b>78%</b><span>Acerto</span></div>
-              <div class="stat"><b>4</b><span>Ativos</span></div>
-              <div class="stat pos"><b>+38.4</b><span>Un. no mês</span></div>
+              <div class="stat"><b class="count" data-target="342">0</b><span>Cliques hoje</span></div>
+              <div class="stat ring-stat">
+                <div class="ring" style="--pct:78"><i>78%</i></div>
+                <span>Acerto</span>
+              </div>
+              <div class="stat"><b class="count" data-target="4">0</b><span>Ativos</span></div>
+              <div class="stat pos"><b class="count" data-target="38.4" data-prefix="+" data-decimals="1">+0.0</b><span>Un. no mês</span></div>
             </div>
 
             <div class="admin-section">
@@ -754,13 +885,8 @@
 
               <div class="setting-row col">
                 <p style="margin-bottom:.2rem;">Cor do tema</p>
-                <span style="margin-bottom:.3rem;">Muda o site inteiro na hora</span>
-                <div class="swatches">
-                  <button class="swatch active" style="background:#17c964" data-accent="#17c964" data-bright="#4cff9e" title="Verde"></button>
-                  <button class="swatch" style="background:#e3b23c" data-accent="#c9932a" data-bright="#e3b23c" title="Ouro"></button>
-                  <button class="swatch" style="background:#2e86ff" data-accent="#2e86ff" data-bright="#5fa2ff" title="Azul"></button>
-                  <button class="swatch" style="background:#b23a48" data-accent="#b23a48" data-bright="#d1596a" title="Vinho"></button>
-                </div>
+                <span style="margin-bottom:.3rem;">Escolhida no painel de cores, ao lado do site — muda tudo na hora</span>
+                <div class="link-field"><span id="themeNameAdmin">Verde Aposta</span></div>
               </div>
             </div>
 
@@ -769,6 +895,107 @@
       </div>
     </section>
 
+    <!-- ============ THEME PICKER ============ -->
+    <section class="phone-block reveal d4" aria-label="Personalizar cor do tema">
+      <p class="phone-label">Cor do tema</p>
+      <div class="theme-panel">
+        <p class="theme-lead">Muda o site inteiro na hora, nos dois celulares ao mesmo tempo. É só escolher a cor que combina com a marca dele.</p>
+        <div class="theme-grid">
+          <button class="theme-swatch active" data-accent="#17c964" data-bright="#4cff9e" data-name="Verde Aposta"><i style="background:#17c964"></i><span>Verde</span></button>
+          <button class="theme-swatch" data-accent="#c9932a" data-bright="#e3b23c" data-name="Ouro Premium"><i style="background:#e3b23c"></i><span>Ouro</span></button>
+          <button class="theme-swatch" data-accent="#2e86ff" data-bright="#5fa2ff" data-name="Azul Elite"><i style="background:#2e86ff"></i><span>Azul</span></button>
+          <button class="theme-swatch" data-accent="#b23a48" data-bright="#d1596a" data-name="Vinho"><i style="background:#b23a48"></i><span>Vinho</span></button>
+          <button class="theme-swatch" data-accent="#8b5cf6" data-bright="#a78bfa" data-name="Roxo Neon"><i style="background:#8b5cf6"></i><span>Roxo</span></button>
+          <button class="theme-swatch" data-accent="#06b6d4" data-bright="#22d3ee" data-name="Ciano"><i style="background:#06b6d4"></i><span>Ciano</span></button>
+          <button class="theme-swatch" data-accent="#f97316" data-bright="#fb923c" data-name="Laranja"><i style="background:#f97316"></i><span>Laranja</span></button>
+          <button class="theme-swatch" data-accent="#ec4899" data-bright="#f472b6" data-name="Rosa"><i style="background:#ec4899"></i><span>Rosa</span></button>
+        </div>
+        <p class="theme-current">Tema atual: <b id="themeName">Verde Aposta</b></p>
+
+        <div class="theme-divider"></div>
+
+        <p class="theme-sub-label">Fonte</p>
+        <div class="font-grid">
+          <button class="font-swatch active" data-display="'Arial Black','Segoe UI',Arial,sans-serif" data-body="'Segoe UI',system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif" data-name="Padrão">
+            <span class="font-preview" style="font-family:'Arial Black','Segoe UI',Arial,sans-serif;">Aa</span>
+            <b>Padrão</b>
+          </button>
+          <button class="font-swatch" data-display="'Anton',sans-serif" data-body="'Inter',system-ui,sans-serif" data-name="Impacto">
+            <span class="font-preview" style="font-family:'Anton',sans-serif;">Aa</span>
+            <b>Impacto</b>
+          </button>
+          <button class="font-swatch" data-display="'Playfair Display',serif" data-body="'Poppins',system-ui,sans-serif" data-name="Elegante">
+            <span class="font-preview" style="font-family:'Playfair Display',serif;font-weight:900;">Aa</span>
+            <b>Elegante</b>
+          </button>
+          <button class="font-swatch" data-display="'Poppins',system-ui,sans-serif" data-body="'Inter',system-ui,sans-serif" data-name="Moderno">
+            <span class="font-preview" style="font-family:'Poppins',system-ui,sans-serif;font-weight:800;">Aa</span>
+            <b>Moderno</b>
+          </button>
+          <button class="font-swatch" data-display="'Bebas Neue',sans-serif" data-body="'Roboto',system-ui,sans-serif" data-name="Retrô Esportivo">
+            <span class="font-preview" style="font-family:'Bebas Neue',sans-serif;">Aa</span>
+            <b>Retrô</b>
+          </button>
+          <button class="font-swatch" data-display="'Orbitron',sans-serif" data-body="'Rajdhani',system-ui,sans-serif" data-name="Tech Ao Vivo">
+            <span class="font-preview" style="font-family:'Orbitron',sans-serif;font-weight:700;">Aa</span>
+            <b>Tech</b>
+          </button>
+          <button class="font-swatch" data-display="'Oswald',sans-serif" data-body="'Lora',serif" data-name="Editorial">
+            <span class="font-preview" style="font-family:'Oswald',sans-serif;font-weight:700;">Aa</span>
+            <b>Editorial</b>
+          </button>
+          <button class="font-swatch" data-display="'Montserrat',system-ui,sans-serif" data-body="'Nunito Sans',system-ui,sans-serif" data-name="Clean Minimal">
+            <span class="font-preview" style="font-family:'Montserrat',system-ui,sans-serif;font-weight:800;">Aa</span>
+            <b>Clean</b>
+          </button>
+        </div>
+        <p class="theme-current">Fonte atual: <b id="fontName">Padrão</b></p>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="models-section reveal d4">
+    <p class="section-eyebrow">Modelos prontos</p>
+    <h2 class="section-title">5 estilos pra escolher</h2>
+    <p class="section-lead">Cada modelo já vem com cor e fonte combinadas. Clica num card pra aplicar nos dois celulares na hora — é só pra ele ver as opções e dizer qual combina mais.</p>
+
+    <div class="model-grid">
+      <button class="model-card active" data-accent="#17c964" data-bright="#4cff9e" data-display="'Anton',sans-serif" data-body="'Inter',system-ui,sans-serif" data-theme-name="Verde Aposta" data-font-name="Impacto">
+        <div class="model-dots"><i style="background:#17c964"></i><i style="background:#4cff9e"></i></div>
+        <span class="model-sample" style="font-family:'Anton',sans-serif;color:#4cff9e;">VN PALPITES</span>
+        <b>Verde Aposta</b>
+        <p>Energia e confiança — o clássico das casas de apostas.</p>
+      </button>
+
+      <button class="model-card" data-accent="#c9932a" data-bright="#e3b23c" data-display="'Playfair Display',serif" data-body="'Poppins',system-ui,sans-serif" data-theme-name="Ouro Premium" data-font-name="Elegante">
+        <div class="model-dots"><i style="background:#c9932a"></i><i style="background:#e3b23c"></i></div>
+        <span class="model-sample" style="font-family:'Playfair Display',serif;font-weight:900;color:#e3b23c;">VN Palpites</span>
+        <b>Ouro Premium</b>
+        <p>Visual VIP, sofisticado — combina com o time da odd Bomba.</p>
+      </button>
+
+      <button class="model-card" data-accent="#06b6d4" data-bright="#22d3ee" data-display="'Orbitron',sans-serif" data-body="'Rajdhani',system-ui,sans-serif" data-theme-name="Tech Ao Vivo" data-font-name="Tech Ao Vivo">
+        <div class="model-dots"><i style="background:#06b6d4"></i><i style="background:#22d3ee"></i></div>
+        <span class="model-sample" style="font-family:'Orbitron',sans-serif;font-weight:700;color:#22d3ee;">VN PALPITES</span>
+        <b>Tech Ao Vivo</b>
+        <p>Futurista, direto — pega bem no público de jogo ao vivo.</p>
+      </button>
+
+      <button class="model-card" data-accent="#b23a48" data-bright="#d1596a" data-display="'Oswald',sans-serif" data-body="'Lora',serif" data-theme-name="Editorial Vinho" data-font-name="Editorial">
+        <div class="model-dots"><i style="background:#b23a48"></i><i style="background:#d1596a"></i></div>
+        <span class="model-sample" style="font-family:'Oswald',sans-serif;font-weight:700;color:#d1596a;">VN PALPITES</span>
+        <b>Editorial Vinho</b>
+        <p>Mais sério, tipo análise esportiva — passa autoridade.</p>
+      </button>
+
+      <button class="model-card" data-accent="#8b5cf6" data-bright="#a78bfa" data-display="'Montserrat',system-ui,sans-serif" data-body="'Nunito Sans',system-ui,sans-serif" data-theme-name="Clean Roxo" data-font-name="Clean Minimal">
+        <div class="model-dots"><i style="background:#8b5cf6"></i><i style="background:#a78bfa"></i></div>
+        <span class="model-sample" style="font-family:'Montserrat',system-ui,sans-serif;font-weight:800;color:#a78bfa;">VN Palpites</span>
+        <b>Clean Roxo</b>
+        <p>Moderno e leve — mais convidativo pra quem tá começando.</p>
+      </button>
+    </div>
   </div>
 
   <footer class="credit">Protótipo desenvolvido por <a href="https://instagram.com/eltongarcia100" target="_blank" rel="noopener noreferrer">@eltongarcia100</a></footer>
@@ -778,9 +1005,15 @@
   function switchTab(name){
     document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.toggle('active', p.dataset.panel === name); });
     document.querySelectorAll('.tabbtn').forEach(function(b){ b.classList.toggle('active', b.dataset.tab === name); });
-    var body = document.querySelector('[data-panel="'+name+'"]').closest('.scroll-body');
-    if(body) body.scrollTop = 0;
+    var screen = document.querySelector('[data-panel="'+name+'"]').closest('.phone-screen');
+    if(screen) screen.scrollTop = 0;
   }
+
+  /* Impede que o navegador role a página inteira ao focar um botão dentro do celular */
+  document.addEventListener('mousedown', function(e){
+    var t = e.target.closest('.phone-screen button, .phone-screen a.cta');
+    if(t) e.preventDefault();
+  });
   function switchSeg(name){
     document.querySelectorAll('.seg-panel').forEach(function(p){ p.classList.toggle('active', p.dataset.segpanel === name); });
     document.querySelectorAll('.seg').forEach(function(b){ b.classList.toggle('active', b.dataset.seg === name); });
@@ -794,12 +1027,41 @@
   });
 
   var stage = document.getElementById('stage');
-  document.querySelectorAll('.swatch').forEach(function(sw){
+
+  function applyTheme(accent, bright, name){
+    stage.style.setProperty('--accent', accent);
+    stage.style.setProperty('--accent-bright', bright);
+    document.getElementById('themeName').textContent = name;
+    document.getElementById('themeNameAdmin').textContent = name;
+    document.querySelectorAll('.theme-swatch').forEach(function(s){ s.classList.toggle('active', s.dataset.accent === accent); });
+  }
+  function applyFont(display, body, name){
+    stage.style.setProperty('--font-display', display);
+    stage.style.setProperty('--font-body', body);
+    document.getElementById('fontName').textContent = name;
+    document.querySelectorAll('.font-swatch').forEach(function(s){ s.classList.toggle('active', s.dataset.display === display); });
+  }
+
+  document.querySelectorAll('.theme-swatch').forEach(function(sw){
     sw.addEventListener('click', function(){
-      document.querySelectorAll('.swatch').forEach(function(s){ s.classList.remove('active'); });
-      sw.classList.add('active');
-      stage.style.setProperty('--accent', sw.dataset.accent);
-      stage.style.setProperty('--accent-bright', sw.dataset.bright);
+      applyTheme(sw.dataset.accent, sw.dataset.bright, sw.dataset.name);
+      document.querySelectorAll('.model-card').forEach(function(m){ m.classList.remove('active'); });
+    });
+  });
+
+  document.querySelectorAll('.font-swatch').forEach(function(fs){
+    fs.addEventListener('click', function(){
+      applyFont(fs.dataset.display, fs.dataset.body, fs.dataset.name);
+      document.querySelectorAll('.model-card').forEach(function(m){ m.classList.remove('active'); });
+    });
+  });
+
+  document.querySelectorAll('.model-card').forEach(function(mc){
+    mc.addEventListener('click', function(){
+      document.querySelectorAll('.model-card').forEach(function(m){ m.classList.remove('active'); });
+      mc.classList.add('active');
+      applyTheme(mc.dataset.accent, mc.dataset.bright, mc.dataset.themeName);
+      applyFont(mc.dataset.display, mc.dataset.body, mc.dataset.fontName);
     });
   });
 
@@ -814,6 +1076,30 @@
       : '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#08120d" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 12 10 18 20 6"/></svg>';
     this.textContent = demoNeg ? 'Ver exemplo no green' : 'Ver exemplo de mês no vermelho';
   });
+
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function animateCount(el){
+    var target = parseFloat(el.dataset.target);
+    var decimals = parseInt(el.dataset.decimals || '0', 10);
+    var prefix = el.dataset.prefix || '';
+    var suffix = el.dataset.suffix || '';
+    if(reduceMotion){
+      el.textContent = prefix + target.toFixed(decimals) + suffix;
+      return;
+    }
+    var duration = 1100, start = null;
+    function ease(t){ return 1 - Math.pow(1 - t, 3); }
+    function step(ts){
+      if(!start) start = ts;
+      var p = Math.min((ts - start) / duration, 1);
+      var val = target * ease(p);
+      el.textContent = prefix + val.toFixed(decimals) + suffix;
+      if(p < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+  document.querySelectorAll('.count').forEach(animateCount);
 </script>
 
 </body>
