@@ -1,0 +1,820 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VN Palpites — Protótipo</title>
+<style>
+  :root{
+    --ink:#0a0f0d;
+    --surface:#131a17;
+    --surface-2:#1a231f;
+    --line:#263029;
+    --accent:#17c964;
+    --accent-bright:#4cff9e;
+    --ouro:#e3b23c;
+    --red:#e5484d;
+    --text:#f2f5f3;
+    --text-muted:#8fa599;
+    --font-display:"Arial Black","Segoe UI",Arial,sans-serif;
+    --font-body:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
+    --font-mono:ui-monospace,"Cascadia Code",Consolas,"SFMono-Regular",Menlo,monospace;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;}
+  ::selection{background:var(--accent);color:#08120d;}
+
+  .stage{
+    background:
+      radial-gradient(60% 50% at 18% 0%, color-mix(in srgb, var(--accent) 20%, transparent), transparent 70%),
+      radial-gradient(50% 40% at 85% 15%, color-mix(in srgb, var(--ouro) 12%, transparent), transparent 70%),
+      var(--ink);
+    color:var(--text);
+    font-family:var(--font-body);
+    min-height:100vh;
+    padding:clamp(1.5rem,4vw,3.5rem) clamp(1rem,4vw,2rem) 3rem;
+  }
+
+  /* ---------- intro ---------- */
+  .intro{max-width:46rem;margin:0 auto 2rem;}
+  .eyebrow{
+    font-family:var(--font-display);
+    font-size:.68rem;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--accent-bright);
+    margin:0 0 .9rem;
+  }
+  .intro h1{
+    font-family:var(--font-display);
+    text-transform:uppercase;
+    font-size:clamp(1.9rem,5vw,2.7rem);
+    letter-spacing:-.01em;
+    line-height:1.05;
+    margin:0 0 .8rem;
+    text-wrap:balance;
+  }
+  .intro h1 span{color:var(--accent-bright);}
+  .intro p{
+    font-size:1rem;
+    line-height:1.6;
+    color:var(--text-muted);
+    max-width:38rem;
+    margin:0 0 .5rem;
+  }
+  .intro .fineprint{
+    font-size:.8rem;
+    color:color-mix(in srgb, var(--text-muted) 75%, transparent);
+    margin-top:1.1rem;
+  }
+
+  .feature-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
+    gap:.7rem;
+    max-width:46rem;
+    margin:0 auto 2.5rem;
+  }
+  .feature-card{
+    background:var(--surface);border:1px solid var(--line);border-radius:.9rem;
+    padding:.8rem .9rem;
+  }
+  .feature-card b{
+    display:block;font-family:var(--font-display);text-transform:uppercase;
+    font-size:.72rem;letter-spacing:.03em;color:var(--accent-bright);margin-bottom:.3rem;
+  }
+  .feature-card span{font-size:.78rem;color:var(--text-muted);line-height:1.45;}
+
+  /* ---------- showcase grid ---------- */
+  .showcase{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+    gap:clamp(1.5rem,3vw,2.5rem);
+    max-width:64rem;
+    margin:0 auto;
+    align-items:start;
+  }
+  .phone-block{display:flex;flex-direction:column;align-items:center;}
+  .phone-label{
+    font-family:var(--font-display);
+    font-size:.72rem;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    color:var(--text-muted);
+    margin:0 0 .9rem;
+  }
+  .phone-label b{color:var(--text);}
+
+  .phone{
+    position:relative;
+    width:100%;
+    max-width:340px;
+    background:linear-gradient(180deg,#1c2521,#0c1210);
+    border:1px solid var(--line);
+    border-radius:2.4rem;
+    padding:.6rem;
+    box-shadow:
+      0 30px 60px -25px rgba(0,0,0,.7),
+      0 0 90px -20px color-mix(in srgb, var(--accent) 45%, transparent),
+      0 0 0 1px rgba(255,255,255,.02) inset;
+  }
+  .phone::before, .phone::after{
+    content:"";position:absolute;background:#0c1210;border:1px solid var(--line);
+  }
+  .phone::before{ /* volume rocker */
+    left:-3px;top:88px;width:3px;height:52px;border-radius:2px 0 0 2px;
+  }
+  .phone::after{ /* power button */
+    right:-3px;top:120px;width:3px;height:70px;border-radius:0 2px 2px 0;
+  }
+  .phone-notch{
+    height:22px;
+    display:flex;align-items:center;justify-content:center;
+    position:relative;
+  }
+  .phone-notch::before{
+    content:"";
+    width:90px;height:14px;
+    background:#000;
+    border-radius:0 0 12px 12px;
+  }
+  .phone-screen{
+    background:var(--surface);
+    border-radius:1.7rem;
+    overflow-y:auto;
+    overflow-x:hidden;
+    height:min(660px,74vh);
+    scrollbar-width:thin;
+    scrollbar-color:var(--line) transparent;
+    display:flex;
+    flex-direction:column;
+  }
+  .statusbar{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:.5rem 1.1rem .2rem;
+    font-family:var(--font-mono);
+    font-size:.68rem;
+    color:var(--text-muted);
+    font-variant-numeric:tabular-nums;
+  }
+
+  /* ---------- app screen ---------- */
+  .sticky-head{position:sticky;top:0;z-index:3;background:var(--surface);}
+  .app-header{
+    display:flex;align-items:center;gap:.6rem;
+    padding:.6rem 1.1rem .8rem;
+    border-bottom:1px solid var(--line);
+  }
+  .mark{
+    width:38px;height:38px;border-radius:50%;
+    background:conic-gradient(from 200deg, var(--accent), var(--ouro), var(--accent));
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--font-display);font-size:.72rem;color:#08120d;
+    flex-shrink:0;
+  }
+  .brand-block{flex:1;min-width:0;}
+  .brand-name{
+    font-family:var(--font-display);
+    text-transform:uppercase;
+    font-size:.92rem;
+    letter-spacing:.02em;
+    line-height:1.1;
+  }
+  .brand-handle{
+    display:inline-flex;align-items:center;gap:.3rem;
+    font-size:.72rem;color:var(--text-muted);
+    margin-top:.15rem;
+  }
+  .at-badge{
+    background:var(--surface-2);
+    border:1px solid var(--line);
+    border-radius:.3rem;
+    padding:0 .3rem;
+    font-family:var(--font-mono);
+    color:var(--accent-bright);
+  }
+  .verified{display:inline-flex;width:13px;height:13px;border-radius:50%;background:var(--accent-bright);align-items:center;justify-content:center;flex-shrink:0;}
+  .verified svg{width:8px;height:8px;stroke:#08120d;stroke-width:3;fill:none;stroke-linecap:round;stroke-linejoin:round;}
+
+  .scroll-body{flex:1;}
+
+  .stories{
+    display:flex;gap:.9rem;
+    padding:.9rem 1.1rem 1rem;
+    overflow-x:auto;
+  }
+  .story{display:flex;flex-direction:column;align-items:center;gap:.35rem;flex-shrink:0;background:none;border:none;cursor:pointer;font-family:var(--font-body);}
+  .story-ring{
+    width:52px;height:52px;border-radius:50%;
+    background:conic-gradient(var(--accent-bright),var(--ouro),var(--accent),var(--accent-bright));
+    padding:2.5px;
+  }
+  .story-ring i{
+    display:flex;width:100%;height:100%;border-radius:50%;
+    background:var(--surface-2);
+    align-items:center;justify-content:center;
+    font-style:normal;font-size:1.1rem;
+  }
+  .story span{font-size:.62rem;color:var(--text-muted);}
+
+  /* tabs (bottom nav) */
+  .tab-panel{display:none;padding:0 1.1rem 1rem;}
+  .tab-panel.active{display:block;animation:tabIn .25s ease;}
+  @keyframes tabIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+  @media (prefers-reduced-motion:reduce){.tab-panel.active{animation:none;}}
+
+  .tabbar{
+    position:sticky;bottom:0;z-index:3;
+    display:flex;
+    background:color-mix(in srgb, var(--surface) 94%, transparent);
+    backdrop-filter:blur(6px);
+    border-top:1px solid var(--line);
+    padding:.45rem .2rem .55rem;
+  }
+  .tabbtn{
+    flex:1;display:flex;flex-direction:column;align-items:center;gap:.15rem;
+    background:transparent;border:none;color:var(--text-muted);
+    font-size:.58rem;padding:.3rem 0;cursor:pointer;
+    text-transform:uppercase;letter-spacing:.02em;font-family:var(--font-body);
+  }
+  .tabbtn svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+  .tabbtn.active{color:var(--accent-bright);}
+
+  .disclaimer-mini{
+    font-size:.58rem;line-height:1.4;text-align:center;
+    color:color-mix(in srgb, var(--text-muted) 70%, transparent);
+    padding:.5rem 1.1rem 0;
+  }
+
+  /* hero (início) */
+  .hero-title{font-family:var(--font-display);text-transform:uppercase;font-size:1.35rem;line-height:1.15;letter-spacing:-.01em;margin:1rem 0 .5rem;text-wrap:balance;}
+  .hero-title span{color:var(--accent-bright);}
+  .hero-sub{font-size:.85rem;color:var(--text-muted);line-height:1.55;margin:0 0 1.1rem;}
+  .hero-stats{display:flex;gap:.5rem;margin-bottom:1.1rem;}
+  .hero-stat{flex:1;background:var(--surface-2);border:1px solid var(--line);border-radius:.7rem;padding:.55rem .3rem;text-align:center;}
+  .hero-stat b{display:block;font-family:var(--font-mono);font-size:1rem;font-weight:700;font-variant-numeric:tabular-nums;}
+  .hero-stat.pos b{color:var(--accent-bright);}
+  .hero-stat span{font-size:.58rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.02em;}
+
+  .hero-highlight{
+    background:color-mix(in srgb, var(--accent) 12%, var(--surface-2));
+    border:1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+    border-radius:1rem;padding:.8rem .9rem;margin-bottom:1.1rem;
+  }
+  .hero-highlight-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:.4rem;}
+  .hero-highlight-top b{font-family:var(--font-display);font-size:.66rem;text-transform:uppercase;color:var(--accent-bright);letter-spacing:.03em;}
+  .hero-highlight p{margin:0;font-size:.85rem;font-weight:600;}
+  .hero-highlight small{font-size:.72rem;color:var(--text-muted);}
+
+  /* segmented control */
+  .seg-control{display:flex;gap:.3rem;background:var(--surface-2);padding:.25rem;border-radius:999px;border:1px solid var(--line);margin:1rem 0 .9rem;}
+  .seg{flex:1;text-align:center;padding:.42rem .5rem;border-radius:999px;border:none;background:transparent;color:var(--text-muted);font-family:var(--font-display);font-size:.66rem;text-transform:uppercase;letter-spacing:.03em;cursor:pointer;}
+  .seg.active{background:var(--accent);color:#08120d;}
+  .seg-panel{display:none;flex-direction:column;gap:.7rem;}
+  .seg-panel.active{display:flex;}
+
+  .feed{display:flex;flex-direction:column;gap:.7rem;}
+  .tip-card{
+    background:var(--surface-2);
+    border:1px solid var(--line);
+    border-radius:1rem;
+    padding:.85rem .9rem;
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .tip-card:hover{transform:translateY(-2px);box-shadow:0 10px 24px -16px rgba(0,0,0,.6);}
+  .tip-card.bomba{
+    border-color:color-mix(in srgb, var(--ouro) 45%, transparent);
+    background:linear-gradient(160deg, color-mix(in srgb, var(--ouro) 9%, var(--surface-2)), var(--surface-2));
+  }
+  .tip-top{display:flex;justify-content:space-between;align-items:center;gap:.5rem;margin-bottom:.5rem;}
+  .tip-comp{font-size:.68rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.04em;}
+  .tip-live{
+    display:inline-flex;align-items:center;gap:.3rem;
+    font-family:var(--font-display);font-size:.62rem;
+    color:var(--red);text-transform:uppercase;letter-spacing:.05em;
+  }
+  .tip-live i{width:6px;height:6px;border-radius:50%;background:var(--red);animation:pulse 1.4s infinite;}
+  .tip-time{font-family:var(--font-mono);font-size:.68rem;color:var(--text-muted);}
+  .tip-teams{font-size:.95rem;font-weight:600;margin:0 0 .2rem;}
+  .tip-market{font-size:.82rem;color:var(--text-muted);margin:0 0 .5rem;}
+  .risk-tag{display:inline-block;font-family:var(--font-mono);font-size:.6rem;color:var(--ouro);border:1px solid color-mix(in srgb,var(--ouro) 45%,transparent);padding:.1rem .4rem;border-radius:.4rem;margin-bottom:.55rem;}
+  .tip-row{display:flex;align-items:center;gap:.6rem;}
+  .odds-badge{
+    font-family:var(--font-mono);font-weight:700;font-size:.95rem;
+    background:color-mix(in srgb, var(--accent) 16%, transparent);
+    border:1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+    color:var(--accent-bright);
+    border-radius:.6rem;
+    padding:.3rem .6rem;
+    font-variant-numeric:tabular-nums;
+  }
+  .tip-card.bomba .odds-badge{
+    background:color-mix(in srgb, var(--ouro) 18%, transparent);
+    border-color:color-mix(in srgb, var(--ouro) 50%, transparent);
+    color:var(--ouro);
+  }
+  .confidence{font-size:.68rem;color:var(--text-muted);flex:1;}
+  .confidence b{color:var(--ouro);}
+  .cta{
+    display:block;text-align:center;margin-top:.7rem;
+    background:var(--accent);color:#08120d;
+    font-family:var(--font-display);font-size:.74rem;
+    text-transform:uppercase;letter-spacing:.04em;
+    padding:.65rem;border-radius:999px;
+    text-decoration:none;
+    transition:filter .15s ease;
+  }
+  .cta:hover{filter:brightness(1.08);}
+  .cta:active{transform:scale(.97);}
+  button:focus-visible, a:focus-visible{outline:2px solid var(--text);outline-offset:2px;}
+  button:active{transform:scale(.96);}
+  @media (prefers-reduced-motion:reduce){.cta:active,button:active{transform:none;}}
+  .ad-tag{font-size:.6rem;color:var(--text-muted);text-align:center;margin-top:.35rem;letter-spacing:.03em;}
+
+  /* resultados */
+  .status-banner{display:flex;align-items:center;gap:.7rem;background:color-mix(in srgb, var(--accent) 18%, var(--surface-2));border:1px solid color-mix(in srgb, var(--accent) 40%, transparent);border-radius:1rem;padding:.9rem;margin:1rem 0 .5rem;}
+  .status-banner.neg{background:color-mix(in srgb, var(--red) 16%, var(--surface-2));border-color:color-mix(in srgb, var(--red) 40%, transparent);}
+  .status-icon{width:34px;height:34px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .status-banner.neg .status-icon{background:var(--red);}
+  .status-text b{display:block;font-family:var(--font-display);font-size:.8rem;text-transform:uppercase;letter-spacing:.01em;}
+  .status-text span{font-size:.72rem;color:var(--text-muted);}
+  .link-toggle{background:none;border:none;color:var(--text-muted);text-decoration:underline;font-size:.68rem;cursor:pointer;padding:0 0 1.1rem;font-family:var(--font-body);}
+
+  .barchart{display:flex;align-items:flex-end;gap:.5rem;height:90px;margin-bottom:.3rem;padding:0 .2rem;}
+  .bar-col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:.3rem;}
+  .bar{width:100%;border-radius:.3rem .3rem 0 0;background:var(--accent);}
+  .bar.neg{background:var(--red);}
+  .bar-col span{font-size:.58rem;color:var(--text-muted);font-variant-numeric:tabular-nums;}
+  .bar-col b{font-size:.58rem;color:var(--text-muted);text-transform:uppercase;}
+  .chart-caption{font-size:.66rem;color:var(--text-muted);margin:0 0 1rem;}
+
+  .stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin-bottom:1rem;}
+  .stat{background:var(--surface-2);border:1px solid var(--line);border-radius:.8rem;padding:.6rem .5rem;text-align:center;}
+  .stat b{display:block;font-family:var(--font-mono);font-size:1.1rem;font-weight:700;font-variant-numeric:tabular-nums;color:var(--text);}
+  .stat.pos b{color:var(--accent-bright);}
+  .stat span{font-size:.58rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.02em;}
+
+  .track{background:var(--surface-2);border:1px solid var(--line);border-radius:1rem;padding:.8rem .9rem;margin-bottom:.6rem;}
+  .track-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:.55rem;}
+  .track-top h3{font-family:var(--font-display);font-size:.72rem;text-transform:uppercase;margin:0;letter-spacing:.03em;}
+  .track-dots{display:flex;gap:.3rem;flex-wrap:wrap;}
+  .dot{width:20px;height:20px;border-radius:.35rem;display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:700;font-family:var(--font-mono);}
+  .dot.g{background:color-mix(in srgb, var(--accent) 25%, transparent);color:var(--accent-bright);}
+  .dot.r{background:color-mix(in srgb, var(--red) 22%, transparent);color:var(--red);}
+
+  /* avisos */
+  .avisos-lead{font-size:.85rem;color:var(--text-muted);margin:1rem 0 1rem;line-height:1.5;}
+  .setting-row{display:flex;align-items:center;justify-content:space-between;gap:.6rem;background:var(--surface-2);border:1px solid var(--line);border-radius:.7rem;padding:.6rem .7rem;margin-bottom:.6rem;}
+  .setting-row p{margin:0;font-size:.78rem;}
+  .setting-row span{font-size:.64rem;color:var(--text-muted);}
+  .switch{width:34px;height:19px;border-radius:999px;background:var(--line);position:relative;border:none;cursor:pointer;flex-shrink:0;}
+  .switch::after{content:"";position:absolute;top:2px;left:2px;width:15px;height:15px;border-radius:50%;background:#cfd8d3;transition:transform .15s ease, background .15s ease;}
+  .switch.on{background:var(--accent);}
+  .switch.on::after{transform:translateX(15px);background:#08120d;}
+
+  .method-row{display:flex;gap:.5rem;margin-bottom:.9rem;}
+  .method-chip{flex:1;text-align:center;padding:.5rem .3rem;border-radius:.6rem;border:1px solid var(--line);background:var(--surface-2);font-size:.72rem;cursor:pointer;color:var(--text-muted);}
+  .method-chip.active{border-color:var(--accent);color:var(--accent-bright);}
+  .method-chip.disabled{opacity:.5;cursor:not-allowed;}
+  .email-row{display:flex;gap:.4rem;margin-bottom:1.2rem;}
+  .email-row input{flex:1;background:var(--surface-2);border:1px solid var(--line);color:var(--text);border-radius:.5rem;padding:.5rem .6rem;font-size:.78rem;font-family:var(--font-body);}
+  .email-row button{background:var(--accent);border:none;color:#08120d;font-family:var(--font-display);text-transform:uppercase;font-size:.66rem;border-radius:.5rem;padding:0 .8rem;cursor:pointer;}
+
+  .notif-heading{font-family:var(--font-display);font-size:.72rem;text-transform:uppercase;color:var(--text-muted);letter-spacing:.03em;margin:0 0 .5rem;}
+  .notif-item{background:var(--surface-2);border:1px solid var(--line);border-radius:.6rem;padding:.55rem .65rem;margin-bottom:.4rem;}
+  .notif-item b{display:block;font-size:.75rem;margin-bottom:.1rem;}
+  .notif-item span{font-size:.62rem;color:var(--text-muted);}
+
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.25;}}
+  @media (prefers-reduced-motion:reduce){.dot,.tip-live i{animation:none;}}
+
+  /* ---------- admin screen ---------- */
+  .admin-top{display:flex;align-items:center;justify-content:space-between;padding:.6rem 1.1rem .8rem;border-bottom:1px solid var(--line);}
+  .admin-title{font-family:var(--font-display);text-transform:uppercase;font-size:1rem;letter-spacing:.02em;}
+  .avatar{width:32px;height:32px;border-radius:50%;background:var(--surface-2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:.72rem;color:var(--ouro);}
+  .admin-body{padding:1rem 1.1rem 1.4rem;}
+
+  .admin-section{margin-bottom:1.3rem;}
+  .admin-section-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:.55rem;}
+  .admin-section-head h3{font-family:var(--font-display);font-size:.78rem;text-transform:uppercase;margin:0;letter-spacing:.03em;}
+  .btn-new{font-family:var(--font-display);font-size:.66rem;text-transform:uppercase;background:var(--accent);color:#08120d;border:none;border-radius:999px;padding:.4rem .7rem;cursor:pointer;letter-spacing:.03em;}
+
+  .plist{display:flex;flex-direction:column;gap:.5rem;}
+  .prow{display:flex;align-items:center;gap:.6rem;background:var(--surface-2);border:1px solid var(--line);border-radius:.7rem;padding:.55rem .7rem;}
+  .prow-info{flex:1;min-width:0;}
+  .prow-info p{margin:0;font-size:.82rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .prow-info span{font-size:.66rem;color:var(--text-muted);}
+  .prow-chips{display:flex;flex-direction:column;gap:.25rem;align-items:flex-end;flex-shrink:0;}
+  .chip{font-family:var(--font-mono);font-size:.6rem;font-weight:700;padding:.15rem .4rem;border-radius:.4rem;flex-shrink:0;white-space:nowrap;}
+  .chip.aberto{background:color-mix(in srgb, var(--ouro) 22%, transparent);color:var(--ouro);}
+  .chip.green{background:color-mix(in srgb, var(--accent) 25%, transparent);color:var(--accent-bright);}
+  .chip.red{background:color-mix(in srgb, var(--red) 22%, transparent);color:var(--red);}
+  .chip.cat-bas{background:color-mix(in srgb, var(--text-muted) 22%, transparent);color:var(--text-muted);}
+  .chip.cat-bomba{background:color-mix(in srgb, var(--ouro) 20%, transparent);color:var(--ouro);}
+  .prow-actions{display:flex;gap:.3rem;flex-shrink:0;}
+  .icon-btn{width:26px;height:26px;border-radius:.4rem;border:1px solid var(--line);background:transparent;color:var(--text-muted);cursor:pointer;display:flex;align-items:center;justify-content:center;}
+  .icon-btn:hover{color:var(--text);border-color:var(--text-muted);}
+
+  .newform{background:var(--surface-2);border:1px dashed var(--line);border-radius:.9rem;padding:.8rem;margin-top:.6rem;display:none;flex-direction:column;gap:.5rem;}
+  .newform.open{display:flex;}
+  .newform label{font-size:.64rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.03em;display:block;margin-bottom:.2rem;}
+  .newform input,.newform select{width:100%;background:var(--surface);border:1px solid var(--line);color:var(--text);border-radius:.5rem;padding:.45rem .55rem;font-size:.8rem;font-family:var(--font-body);}
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;}
+  .form-actions{display:flex;justify-content:flex-end;gap:.5rem;margin-top:.2rem;}
+  .btn-ghost{background:transparent;border:1px solid var(--line);color:var(--text-muted);border-radius:999px;padding:.4rem .8rem;font-size:.7rem;cursor:pointer;font-family:var(--font-body);}
+  .btn-solid{background:var(--accent);border:none;color:#08120d;font-family:var(--font-display);text-transform:uppercase;font-size:.68rem;border-radius:999px;padding:.45rem .9rem;cursor:pointer;}
+
+  .setting-row.col{flex-direction:column;align-items:stretch;}
+
+  .swatches{display:flex;gap:.5rem;padding:.2rem 0 .1rem;}
+  .swatch{width:28px;height:28px;border-radius:50%;border:2px solid transparent;cursor:pointer;}
+  .swatch.active{border-color:var(--text);}
+
+  .link-field{display:flex;align-items:center;gap:.4rem;background:var(--surface);border:1px solid var(--line);border-radius:.5rem;padding:.4rem .55rem;font-family:var(--font-mono);font-size:.7rem;color:var(--text-muted);overflow:hidden;}
+  .link-field span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+
+  .credit{max-width:64rem;margin:2.5rem auto 0;text-align:center;font-size:.75rem;color:var(--text-muted);}
+  .credit a{color:var(--accent-bright);text-decoration:none;font-weight:600;}
+  .credit a:hover{text-decoration:underline;}
+</style>
+</head>
+<body>
+
+<div class="stage" id="stage">
+
+  <div class="intro">
+    <p class="eyebrow">Protótipo · Demonstração</p>
+    <h1>VN <span>Palpites</span></h1>
+    <p>Exemplo de como pode ficar o site do @vinny_oliverr. O seguidor vê o palpite e toca em um botão que já leva direto ao bilhete pronto na casa parceira. Ao lado, o painel onde ele publica e controla tudo.</p>
+    <p class="fineprint">Protótipo estático, com dados fictícios — sem conexão real com Instagram ou casas de apostas.</p>
+  </div>
+
+  <div class="feature-grid">
+    <div class="feature-card"><b>Início</b><span>Tela de entrada pública, sem login — pensada pra quem chega direto do Instagram e precisa entender o site em 3 segundos.</span></div>
+    <div class="feature-card"><b>Palpites</b><span>Separados por categoria: Odd Básica (em torno de 2.00) e Bomba (múltiplas de odd alta, tipo 200).</span></div>
+    <div class="feature-card"><b>Resultados</b><span>Mostra se o mês está no green ou no vermelho, o lucro em unidades e o histórico de acertos.</span></div>
+    <div class="feature-card"><b>Avisos</b><span>Seguidor ativa e recebe um aviso (por e-mail, por enquanto) toda vez que sai um palpite novo.</span></div>
+  </div>
+
+  <div class="showcase">
+
+    <!-- ============ PUBLIC SITE ============ -->
+    <section class="phone-block" aria-label="Site para os seguidores">
+      <p class="phone-label">O que o seguidor vê</p>
+      <div class="phone">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+
+          <div class="sticky-head">
+            <div class="statusbar"><span>20:47</span><span>●●● VN</span></div>
+            <div class="app-header">
+              <div class="mark">VN</div>
+              <div class="brand-block">
+                <div class="brand-name">Vn Palpites</div>
+                <div class="brand-handle"><span class="at-badge">@vinny_oliverr</span><span class="verified"><svg viewBox="0 0 24 24"><polyline points="4 12 10 18 20 6"/></svg></span> · 128 mil seguidores</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="scroll-body">
+
+            <!-- INÍCIO -->
+            <div class="tab-panel active" data-panel="inicio">
+              <div class="stories">
+                <button class="story" onclick="switchTab('palpites')"><div class="story-ring"><i>⚽</i></div><span>Hoje</span></button>
+                <button class="story" onclick="switchTab('palpites');switchSeg('bomba')"><div class="story-ring"><i>🔥</i></div><span>Bomba</span></button>
+                <button class="story" onclick="switchTab('resultados')"><div class="story-ring"><i>%</i></div><span>Resultados</span></button>
+                <button class="story" onclick="switchTab('avisos')"><div class="story-ring"><i>🔔</i></div><span>Avisos</span></button>
+              </div>
+
+              <div style="padding:0 1.1rem;">
+                <h2 class="hero-title">Seu próximo <span>green</span> tá aqui</h2>
+                <p class="hero-sub">Segue os palpites do Vinny, toca no botão e cai direto no bilhete pronto. Sem planilha, sem enrolação.</p>
+
+                <div class="hero-stats">
+                  <div class="hero-stat"><b>78%</b><span>Acerto</span></div>
+                  <div class="hero-stat"><b>128k</b><span>Seguidores</span></div>
+                  <div class="hero-stat pos"><b>+38.4</b><span>Un. no mês</span></div>
+                </div>
+
+                <div class="hero-highlight">
+                  <div class="hero-highlight-top"><b>Green de hoje</b><span class="chip green">Green</span></div>
+                  <p>Corinthians x São Paulo — Ambas marcam</p>
+                  <small>Odd 2.30 · bateu no intervalo</small>
+                </div>
+
+                <a class="cta" href="#" onclick="switchTab('palpites');return false;">Ver palpites de hoje →</a>
+                <p class="ad-tag">@vinny_oliverr no Instagram</p>
+              </div>
+            </div>
+
+            <!-- PALPITES -->
+            <div class="tab-panel" data-panel="palpites">
+              <div class="seg-control">
+                <button class="seg active" data-seg="basica" onclick="switchSeg('basica')">Odd Básica</button>
+                <button class="seg" data-seg="bomba" onclick="switchSeg('bomba')">Bomba</button>
+              </div>
+
+              <div class="seg-panel active" data-segpanel="basica">
+                <div class="feed">
+                  <div class="tip-card">
+                    <div class="tip-top"><span class="tip-comp">Brasileirão · Série A</span><span class="tip-time">19:30</span></div>
+                    <p class="tip-teams">Flamengo x Palmeiras</p>
+                    <p class="tip-market">Ambas as equipes marcam — Sim</p>
+                    <div class="tip-row"><span class="odds-badge">1.85</span><span class="confidence">Confiança: <b>Alta</b></span></div>
+                    <a class="cta" href="#" onclick="return false" title="Exemplo — levaria ao bilhete pronto">Ver bilhete pronto →</a>
+                    <p class="ad-tag">Publicidade · +18</p>
+                  </div>
+                  <div class="tip-card">
+                    <div class="tip-top"><span class="tip-live"><i></i>Ao vivo</span><span class="tip-time">2ºT 61'</span></div>
+                    <p class="tip-teams">Lakers x Celtics</p>
+                    <p class="tip-market">Total de pontos — Mais de 220.5</p>
+                    <div class="tip-row"><span class="odds-badge">1.92</span><span class="confidence">Confiança: <b>Média</b></span></div>
+                    <a class="cta" href="#" onclick="return false" title="Exemplo — levaria ao bilhete pronto">Ver bilhete pronto →</a>
+                    <p class="ad-tag">Publicidade · +18</p>
+                  </div>
+                  <div class="tip-card">
+                    <div class="tip-top"><span class="tip-comp">Champions League</span><span class="tip-time">Amanhã · 16:00</span></div>
+                    <p class="tip-teams">Real Madrid x Man City</p>
+                    <p class="tip-market">Real Madrid vence + Mais de 2.5 gols</p>
+                    <div class="tip-row"><span class="odds-badge">2.10</span><span class="confidence">Confiança: <b>Alta</b></span></div>
+                    <a class="cta" href="#" onclick="return false" title="Exemplo — levaria ao bilhete pronto">Ver bilhete pronto →</a>
+                    <p class="ad-tag">Publicidade · +18</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="seg-panel" data-segpanel="bomba">
+                <div class="feed">
+                  <div class="tip-card bomba">
+                    <div class="tip-top"><span class="tip-comp">Múltipla especial · 6 jogos</span><span class="tip-time">Hoje</span></div>
+                    <p class="tip-teams">Flamengo, Real Madrid, Lakers +3</p>
+                    <p class="tip-market">Combinação de resultados selecionados a dedo</p>
+                    <span class="risk-tag">Alto risco</span>
+                    <div class="tip-row"><span class="odds-badge">187.40</span><span class="confidence">Poucas unidades — odd alta</span></div>
+                    <a class="cta" href="#" onclick="return false" title="Exemplo — levaria ao bilhete pronto">Ver bilhete pronto →</a>
+                    <p class="ad-tag">Publicidade · +18</p>
+                  </div>
+                  <div class="tip-card bomba">
+                    <div class="tip-top"><span class="tip-comp">Múltipla especial · 4 jogos</span><span class="tip-time">Amanhã</span></div>
+                    <p class="tip-teams">Man City, Boca Juniors +2</p>
+                    <p class="tip-market">Combinação de resultados selecionados a dedo</p>
+                    <span class="risk-tag">Alto risco</span>
+                    <div class="tip-row"><span class="odds-badge">96.20</span><span class="confidence">Poucas unidades — odd alta</span></div>
+                    <a class="cta" href="#" onclick="return false" title="Exemplo — levaria ao bilhete pronto">Ver bilhete pronto →</a>
+                    <p class="ad-tag">Publicidade · +18</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- RESULTADOS -->
+            <div class="tab-panel" data-panel="resultados">
+              <div class="status-banner" id="statusBanner">
+                <div class="status-icon" id="statusIcon">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#08120d" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 12 10 18 20 6"/></svg>
+                </div>
+                <div class="status-text">
+                  <b id="statusLabel">Estamos no green este mês</b>
+                  <span id="statusValue">Lucro: +38.4 unidades</span>
+                </div>
+              </div>
+              <button class="link-toggle" id="statusDemoToggle">Ver exemplo de mês no vermelho</button>
+
+              <h3 class="notif-heading" style="margin-top:0;">Últimos 6 meses (unidades)</h3>
+              <div class="barchart">
+                <div class="bar-col"><span id="bv1">+12</span><div class="bar" style="height:25px"></div><b>Fev</b></div>
+                <div class="bar-col"><span id="bv2">+18</span><div class="bar" style="height:37px"></div><b>Mar</b></div>
+                <div class="bar-col"><span id="bv3">-6</span><div class="bar neg" style="height:13px"></div><b>Abr</b></div>
+                <div class="bar-col"><span id="bv4">+24</span><div class="bar" style="height:50px"></div><b>Mai</b></div>
+                <div class="bar-col"><span id="bv5">+9</span><div class="bar" style="height:19px"></div><b>Jun</b></div>
+                <div class="bar-col"><span id="bv6" style="color:var(--accent-bright)">+38.4</span><div class="bar" style="height:80px;background:var(--accent-bright)"></div><b>Jul</b></div>
+              </div>
+              <p class="chart-caption">Lucro tratado em unidades de aposta, não em valor fixo — cada seguidor aposta o quanto quiser.</p>
+
+              <div class="stat-row">
+                <div class="stat pos"><b>34</b><span>Green</span></div>
+                <div class="stat"><b>9</b><span>Red</span></div>
+                <div class="stat"><b>79%</b><span>Acerto</span></div>
+              </div>
+
+              <div class="track">
+                <div class="track-top"><h3>Últimos 10 bilhetes</h3></div>
+                <div class="track-dots">
+                  <span class="dot g">G</span><span class="dot g">G</span><span class="dot r">R</span>
+                  <span class="dot g">G</span><span class="dot g">G</span><span class="dot g">G</span>
+                  <span class="dot r">R</span><span class="dot g">G</span><span class="dot g">G</span><span class="dot g">G</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- AVISOS -->
+            <div class="tab-panel" data-panel="avisos">
+              <p class="avisos-lead">Ativa os avisos e recebe um alerta assim que o Vinny publicar um palpite novo — sem precisar ficar de olho no Instagram o dia todo.</p>
+
+              <div class="setting-row">
+                <div><p>Ativar notificações</p><span>Palpites, resultados do mês e avisos de green/red</span></div>
+                <button class="switch on" onclick="this.classList.toggle('on')"></button>
+              </div>
+
+              <div class="method-row">
+                <button class="method-chip active" id="chipEmail" onclick="pickMethod('email')">E-mail</button>
+                <button class="method-chip disabled" title="Em breve" onclick="return false">WhatsApp (em breve)</button>
+              </div>
+
+              <div class="email-row">
+                <input type="email" placeholder="seu@email.com">
+                <button onclick="return false">Salvar</button>
+              </div>
+
+              <h3 class="notif-heading">Exemplo de avisos enviados</h3>
+              <div class="notif-item"><b>Novo palpite: Real Madrid x Man City</b><span>há 2 min</span></div>
+              <div class="notif-item"><b>Green! Corinthians x São Paulo bateu</b><span>hoje, 16:42</span></div>
+              <div class="notif-item"><b>Fechamos o mês no green: +38.4 unidades</b><span>1 jul</span></div>
+            </div>
+
+          </div>
+
+          <div class="disclaimer-mini"><b>+18.</b> Conteúdo com fins de entretenimento. Apostas envolvem risco. Jogue com responsabilidade.</div>
+
+          <div class="tabbar">
+            <button class="tabbtn active" data-tab="inicio" onclick="switchTab('inicio')">
+              <svg viewBox="0 0 24 24"><path d="M4 11 12 4l8 7"/><path d="M6 10v9h5v-6h2v6h5v-9"/></svg>
+              Início
+            </button>
+            <button class="tabbtn" data-tab="palpites" onclick="switchTab('palpites')">
+              <svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="10" rx="2"/><line x1="9" y1="7" x2="9" y2="17" stroke-dasharray="2 2"/></svg>
+              Palpites
+            </button>
+            <button class="tabbtn" data-tab="resultados" onclick="switchTab('resultados')">
+              <svg viewBox="0 0 24 24"><line x1="4" y1="20" x2="4" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="20" y1="20" x2="20" y2="14"/></svg>
+              Resultados
+            </button>
+            <button class="tabbtn" data-tab="avisos" onclick="switchTab('avisos')">
+              <svg viewBox="0 0 24 24"><path d="M6 10a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6"/><path d="M10 20a2 2 0 0 0 4 0"/></svg>
+              Avisos
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ ADMIN PANEL ============ -->
+    <section class="phone-block" aria-label="Painel administrativo">
+      <p class="phone-label">O que o Vinny vê <b>(painel admin)</b></p>
+      <div class="phone">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+
+          <div class="sticky-head">
+            <div class="statusbar"><span>20:47</span><span>●●● VN</span></div>
+            <div class="admin-top"><span class="admin-title">Painel</span><div class="avatar">V</div></div>
+          </div>
+
+          <div class="admin-body">
+
+            <div class="stat-row" style="grid-template-columns:repeat(2,1fr);">
+              <div class="stat"><b>342</b><span>Cliques hoje</span></div>
+              <div class="stat"><b>78%</b><span>Acerto</span></div>
+              <div class="stat"><b>4</b><span>Ativos</span></div>
+              <div class="stat pos"><b>+38.4</b><span>Un. no mês</span></div>
+            </div>
+
+            <div class="admin-section">
+              <div class="admin-section-head"><h3>Palpites</h3><button class="btn-new" id="toggleForm">+ Novo</button></div>
+              <div class="plist">
+                <div class="prow">
+                  <div class="prow-info"><p>Flamengo x Palmeiras</p><span>Odd 1.85 · 19:30</span></div>
+                  <div class="prow-chips"><span class="chip cat-bas">Básica</span><span class="chip aberto">Aberto</span></div>
+                  <div class="prow-actions"><button class="icon-btn" title="Editar" onclick="return false">✎</button><button class="icon-btn" title="Excluir" onclick="return false">✕</button></div>
+                </div>
+                <div class="prow">
+                  <div class="prow-info"><p>6 jogos · Múltipla</p><span>Odd 187.40 · hoje</span></div>
+                  <div class="prow-chips"><span class="chip cat-bomba">Bomba</span><span class="chip aberto">Aberto</span></div>
+                  <div class="prow-actions"><button class="icon-btn" title="Editar" onclick="return false">✎</button><button class="icon-btn" title="Excluir" onclick="return false">✕</button></div>
+                </div>
+                <div class="prow">
+                  <div class="prow-info"><p>Corinthians x São Paulo</p><span>Odd 2.30 · ontem</span></div>
+                  <div class="prow-chips"><span class="chip cat-bas">Básica</span><span class="chip green">Green</span></div>
+                  <div class="prow-actions"><button class="icon-btn" title="Editar" onclick="return false">✎</button><button class="icon-btn" title="Excluir" onclick="return false">✕</button></div>
+                </div>
+                <div class="prow">
+                  <div class="prow-info"><p>Grêmio x Internacional</p><span>Odd 1.75 · ontem</span></div>
+                  <div class="prow-chips"><span class="chip cat-bas">Básica</span><span class="chip red">Red</span></div>
+                  <div class="prow-actions"><button class="icon-btn" title="Editar" onclick="return false">✎</button><button class="icon-btn" title="Excluir" onclick="return false">✕</button></div>
+                </div>
+              </div>
+
+              <div class="newform" id="newForm">
+                <div><label>Categoria</label><select><option>Odd Básica</option><option>Bomba (odd alta)</option></select></div>
+                <div class="form-grid">
+                  <div><label>Campeonato</label><input type="text" placeholder="Ex: Brasileirão"></div>
+                  <div><label>Horário</label><input type="text" placeholder="Ex: 19:30"></div>
+                </div>
+                <div><label>Times</label><input type="text" placeholder="Ex: Flamengo x Palmeiras"></div>
+                <div><label>Mercado</label><input type="text" placeholder="Ex: Ambas marcam - Sim"></div>
+                <div class="form-grid">
+                  <div><label>Odd</label><input type="text" placeholder="Ex: 1.85"></div>
+                  <div><label>Confiança</label><select><option>Alta</option><option>Média</option><option>Baixa</option></select></div>
+                </div>
+                <div><label>Link do bilhete pronto</label><input type="text" placeholder="https://parceiro.com/bilhete/..."></div>
+                <div class="form-actions">
+                  <button class="btn-ghost" onclick="document.getElementById('newForm').classList.remove('open')">Cancelar</button>
+                  <button class="btn-solid" onclick="return false">Publicar</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="admin-section">
+              <div class="admin-section-head"><h3>Notificações</h3></div>
+              <div class="setting-row">
+                <div><p>Avisar seguidores ao publicar</p><span>Dispara e-mail automático</span></div>
+                <button class="switch on" onclick="this.classList.toggle('on')"></button>
+              </div>
+              <div class="setting-row">
+                <div><p>Avisar quando fechar Green/Red</p><span>Reforça o histórico de resultados</span></div>
+                <button class="switch on" onclick="this.classList.toggle('on')"></button>
+              </div>
+            </div>
+
+            <div class="admin-section">
+              <div class="admin-section-head"><h3>Configurações</h3></div>
+
+              <div class="setting-row">
+                <div><p>Instagram conectado</p><span>@vinny_oliverr</span></div>
+                <button class="switch on" onclick="this.classList.toggle('on')"></button>
+              </div>
+
+              <div class="setting-row col">
+                <p style="margin-bottom:.4rem;">Link de afiliado padrão</p>
+                <div class="link-field"><span>https://parceiro.com/ref/vinnyoliverr</span></div>
+              </div>
+
+              <div class="setting-row col">
+                <p style="margin-bottom:.2rem;">Cor do tema</p>
+                <span style="margin-bottom:.3rem;">Muda o site inteiro na hora</span>
+                <div class="swatches">
+                  <button class="swatch active" style="background:#17c964" data-accent="#17c964" data-bright="#4cff9e" title="Verde"></button>
+                  <button class="swatch" style="background:#e3b23c" data-accent="#c9932a" data-bright="#e3b23c" title="Ouro"></button>
+                  <button class="swatch" style="background:#2e86ff" data-accent="#2e86ff" data-bright="#5fa2ff" title="Azul"></button>
+                  <button class="swatch" style="background:#b23a48" data-accent="#b23a48" data-bright="#d1596a" title="Vinho"></button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <footer class="credit">Protótipo desenvolvido por <a href="https://instagram.com/eltongarcia100" target="_blank" rel="noopener noreferrer">@eltongarcia100</a></footer>
+</div>
+
+<script>
+  function switchTab(name){
+    document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.toggle('active', p.dataset.panel === name); });
+    document.querySelectorAll('.tabbtn').forEach(function(b){ b.classList.toggle('active', b.dataset.tab === name); });
+    var body = document.querySelector('[data-panel="'+name+'"]').closest('.scroll-body');
+    if(body) body.scrollTop = 0;
+  }
+  function switchSeg(name){
+    document.querySelectorAll('.seg-panel').forEach(function(p){ p.classList.toggle('active', p.dataset.segpanel === name); });
+    document.querySelectorAll('.seg').forEach(function(b){ b.classList.toggle('active', b.dataset.seg === name); });
+  }
+  function pickMethod(name){
+    document.getElementById('chipEmail').classList.toggle('active', name === 'email');
+  }
+
+  document.getElementById('toggleForm').addEventListener('click', function(){
+    document.getElementById('newForm').classList.toggle('open');
+  });
+
+  var stage = document.getElementById('stage');
+  document.querySelectorAll('.swatch').forEach(function(sw){
+    sw.addEventListener('click', function(){
+      document.querySelectorAll('.swatch').forEach(function(s){ s.classList.remove('active'); });
+      sw.classList.add('active');
+      stage.style.setProperty('--accent', sw.dataset.accent);
+      stage.style.setProperty('--accent-bright', sw.dataset.bright);
+    });
+  });
+
+  var demoNeg = false;
+  document.getElementById('statusDemoToggle').addEventListener('click', function(){
+    demoNeg = !demoNeg;
+    document.getElementById('statusBanner').classList.toggle('neg', demoNeg);
+    document.getElementById('statusLabel').textContent = demoNeg ? 'Estamos no vermelho este mês' : 'Estamos no green este mês';
+    document.getElementById('statusValue').textContent = demoNeg ? 'Prejuízo: -12.6 unidades' : 'Lucro: +38.4 unidades';
+    document.getElementById('statusIcon').innerHTML = demoNeg
+      ? '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#2a0d0f" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>'
+      : '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#08120d" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 12 10 18 20 6"/></svg>';
+    this.textContent = demoNeg ? 'Ver exemplo no green' : 'Ver exemplo de mês no vermelho';
+  });
+</script>
+
+</body>
+</html>
