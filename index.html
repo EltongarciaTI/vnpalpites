@@ -32,8 +32,8 @@
     --red:#e5484d;
     --text:#f2f5f3;
     --text-muted:#8fa599;
-    --font-display:"Arial Black","Segoe UI",Arial,sans-serif;
-    --font-body:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
+    --font-display:'Anton',"Arial Black","Segoe UI",Arial,sans-serif;
+    --font-body:'Inter',"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
     --font-mono:ui-monospace,"Cascadia Code",Consolas,"SFMono-Regular",Menlo,monospace;
   }
 
@@ -528,11 +528,19 @@
 
   .model-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;}
   .model-card{
+    position:relative;
     text-align:left;cursor:pointer;font-family:var(--font-body);
     background:var(--surface);border:1px solid var(--line);border-radius:1.1rem;
     padding:1.1rem 1.1rem 1.2rem;
     display:flex;flex-direction:column;gap:.7rem;
     transition:transform .15s ease, border-color .15s ease, box-shadow .15s ease;
+  }
+  .model-badge{
+    position:absolute;top:-.6rem;right:1rem;
+    background:var(--accent-bright);color:#08120d;
+    font-family:"Segoe UI",system-ui,sans-serif;font-size:.62rem;font-weight:700;
+    text-transform:uppercase;letter-spacing:.03em;
+    padding:.2rem .55rem;border-radius:999px;
   }
   .model-card:hover{transform:translateY(-3px);box-shadow:0 16px 32px -20px rgba(0,0,0,.5);}
   .model-card.active{border-color:var(--accent-bright);box-shadow:0 0 0 1px var(--accent-bright);}
@@ -916,11 +924,11 @@
 
         <p class="theme-sub-label">Fonte</p>
         <div class="font-grid">
-          <button class="font-swatch active" data-display="'Arial Black','Segoe UI',Arial,sans-serif" data-body="'Segoe UI',system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif" data-name="Padrão">
+          <button class="font-swatch" data-display="'Arial Black','Segoe UI',Arial,sans-serif" data-body="'Segoe UI',system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif" data-name="Padrão">
             <span class="font-preview" style="font-family:'Arial Black','Segoe UI',Arial,sans-serif;">Aa</span>
             <b>Padrão</b>
           </button>
-          <button class="font-swatch" data-display="'Anton',sans-serif" data-body="'Inter',system-ui,sans-serif" data-name="Impacto">
+          <button class="font-swatch active" data-display="'Anton',sans-serif" data-body="'Inter',system-ui,sans-serif" data-name="Impacto">
             <span class="font-preview" style="font-family:'Anton',sans-serif;">Aa</span>
             <b>Impacto</b>
           </button>
@@ -949,7 +957,7 @@
             <b>Clean</b>
           </button>
         </div>
-        <p class="theme-current">Fonte atual: <b id="fontName">Padrão</b></p>
+        <p class="theme-current">Fonte atual: <b id="fontName">Impacto</b></p>
       </div>
     </section>
 
@@ -962,6 +970,7 @@
 
     <div class="model-grid">
       <button class="model-card active" data-accent="#17c964" data-bright="#4cff9e" data-display="'Anton',sans-serif" data-body="'Inter',system-ui,sans-serif" data-theme-name="Verde Aposta" data-font-name="Impacto">
+        <span class="model-badge">Recomendado</span>
         <div class="model-dots"><i style="background:#17c964"></i><i style="background:#4cff9e"></i></div>
         <span class="model-sample" style="font-family:'Anton',sans-serif;color:#4cff9e;">VN PALPITES</span>
         <b>Verde Aposta</b>
