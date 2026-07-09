@@ -573,7 +573,7 @@
 
     <div class="trust-bar">
       <div class="trust-item"><b class="count" data-target="78" data-suffix="%">0%</b><span>Acerto</span></div>
-      <div class="trust-item"><b class="count" data-target="128" data-suffix="k">0k</b><span>Seguidores</span></div>
+      <div class="trust-item"><b class="count" data-target="8697">0</b><span>Seguidores</span></div>
       <div class="trust-item"><b class="count" data-target="38.4" data-prefix="+" data-decimals="1">+0.0</b><span>Un. no mês</span></div>
     </div>
   </div>
@@ -600,7 +600,7 @@
               <div class="mark">VN</div>
               <div class="brand-block">
                 <div class="brand-name">Vn Palpites</div>
-                <div class="brand-handle"><span class="at-badge">@vinny_oliverr</span><span class="verified"><svg viewBox="0 0 24 24"><polyline points="4 12 10 18 20 6"/></svg></span> · 128 mil seguidores</div>
+                <div class="brand-handle"><span class="at-badge">@vinny_oliverr</span><span class="verified"><svg viewBox="0 0 24 24"><polyline points="4 12 10 18 20 6"/></svg></span> · 8.697 seguidores</div>
               </div>
             </div>
           </div>
@@ -622,7 +622,7 @@
 
                 <div class="hero-stats">
                   <div class="hero-stat"><b class="count" data-target="78" data-suffix="%">0%</b><span>Acerto</span></div>
-                  <div class="hero-stat"><b class="count" data-target="128" data-suffix="k">0k</b><span>Seguidores</span></div>
+                  <div class="hero-stat"><b class="count" data-target="8697">0</b><span>Seguidores</span></div>
                   <div class="hero-stat pos"><b class="count" data-target="38.4" data-prefix="+" data-decimals="1">+0.0</b><span>Un. no mês</span></div>
                 </div>
 
@@ -1084,8 +1084,12 @@
     var decimals = parseInt(el.dataset.decimals || '0', 10);
     var prefix = el.dataset.prefix || '';
     var suffix = el.dataset.suffix || '';
+    function fmt(v){
+      if(decimals > 0) return v.toFixed(decimals);
+      return Math.round(v).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    }
     if(reduceMotion){
-      el.textContent = prefix + target.toFixed(decimals) + suffix;
+      el.textContent = prefix + fmt(target) + suffix;
       return;
     }
     var duration = 1100, start = null;
@@ -1094,7 +1098,7 @@
       if(!start) start = ts;
       var p = Math.min((ts - start) / duration, 1);
       var val = target * ease(p);
-      el.textContent = prefix + val.toFixed(decimals) + suffix;
+      el.textContent = prefix + fmt(val) + suffix;
       if(p < 1) requestAnimationFrame(step);
     }
     requestAnimationFrame(step);
